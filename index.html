@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>TTS</title>
+
+  <style>
+    body {
+      font-family: sans-serif;
+      background-color: #000;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    h2, h1 {
+      color: white;
+      text-align: center;
+    }
+
+    #menu {
+      text-align: center;
+      color: white;
+    }
+
+    #menu h1 {
+      font-size: 32px;
+      margin-bottom: 40px;
+    }
+
+    .menu-buttons {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .menu-btn {
+      padding: 12px 25px;
+      font-size: 18px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      background: #444;
+      color: white;
+      transition: 0.3s;
+      min-width: 150px;
+    }
+
+    .menu-btn:hover { background: #666; }
+
+    #game {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      width: 100%; 
+      height: 100%;
+    }
+
+    .grid {
+      display: grid;
+      gap: 2px;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .cell {
+      width: 40px;
+      height: 40px;
+      border: 1px solid #000;
+      background-color: white;
+      position: relative;
+    }
+
+    .cell input {
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: transparent;
+      font-size: 24px;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .cell.disabled {
+      background-color: #222;
+    }
+
+    .number {
+      position: absolute;
+      top: 2px;
+      left: 3px;
+      font-size: 10px;
+      font-weight: bold;
+    }
+
+    .back-btn {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      padding: 10px 20px;
+      font-size: 14px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      background: #444;
+      color: white;
+      transition: 0.3s;
+    }
+
+    .back-btn:hover { background: #666; }
+
+    #cluesBox {
+      color: white;
+      margin-top: 20px;
+      text-align: left;
+      max-width: 400px;
+    }
+
+    #optionsModal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.8);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .options-content {
+      background: #111;
+      padding: 20px;
+      border-radius: 10px;
+      color: white;
+      width: 300px;
+      text-align: center;
+    }
+
+    .options-content input[type="range"] {
+      width: 100%;
+    }
+
+    .close-btn {
+      margin-top: 15px;
+      padding: 8px 15px;
+      background: #444;
+      border: none;
+      border-radius: 6px;
+      color: white;
+      cursor: pointer;
+      min-width: 100px;
+    }
+
+    .close-btn:hover { background: #666; }
+  </style>
+</head>
+<body>
+  <div id="menu">
+    <h1>Teka-Teki Silang</h1>
+    <div class="menu-buttons">
+      <button class="menu-btn" onclick="startGame()">Play</button>
+      <button class="menu-btn" onclick="openOptions()">Options</button>
+    </div>
+  </div>
+
+  <div id="game">
+    <button class="back-btn" onclick="backToMenu()">← Menu</button>
+    <h2 id="levelTitle">TTS Level 1</h2>
+    <div class="grid" id="grid"></div>
+
+    <button class="menu-btn" onclick="checkAnswers()">Cek Jawaban</button>
+
+    <div id="cluesBox">
+      <div id="cluesLevel1" class="clues">
+        <h2>Clues</h2>
+        <p><b>1.</b>PULAU TERBESAR DI INDONESIA</p>
+        <p><b>2.</b>DANAU TERBESAR DI INDONESIA</p>
+        <p><b>3.</b>IBU KOTA PROVINSI JAWA TIMUR</p>
+        <p><b>4.</b>PROVINSI DENGAN TARI SAMAN SEBAGAI TARIAN TRADISIONAL</p>
+        <p><b>5.</b>MAKANAN KHAS PADANG YANG TERKENAL DI SELURUH INDONESIA</p>
+        <p><b>6.</b>MAKANAN KHAS SUNDA BERUPA SAYURAN MENTAH DAN SAMBAL</p>
+        <p><b>7.</b>MAKANAN KHAS BETAWI YANG BERBAHAN DASAR BERAS KETAN DAN SERUNDENG</p>
+        <p><b>8.</b>TARIAN KHAS JAWA TENGAH YANG DILAKUKAN DENGAN LEMAH GEMULAI</p>
+        <p><b>9.</b>TARIAN KHAS PAPUA YANG DILAKUKAN DENGAN GERAKAN CEPAT DAN SEMANGAT</p>
+        <p><b>10.</b>TARIAN KHAS DARI ACEH YANG DILAKUKAN SECARA BERKELOMPOK</p>
+        <p><b>11.</b>ALAT MUSIK KHAS SULAWESI SELATAN BERBENTUK SEPERTI KECAPI</p>
+        <p><b>12.</b>ALAT MUSIK DARI MALUKU YANG DIMAINKAN DENGAN CARA DIPUKUL</p>
+        <p><b>13.</b>ALAT MUSIK KHAS MINANGKABAU YANG BERBENTUK SEPERTI SERULING</p>
+        <p><b>14.</b>SENJATA TRADISIONAL KHAS JAWA TENGAH ATAU JAWA TIMUR</p>
+        <p><b>15.</b>SENJATA TRADISIONAL KHAS SUKU DAYAK DIKALIMANTAN</p>
+        <p><b>16.</b>SENJATA KHAS KALIMANTAN YANG DIGUNAKAN BERSAMA PERISAI TELAWANG</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="optionsModal">
+    <div class="options-content">
+      <h2>Options</h2>
+      <label for="volume">Volume Musik</label><br>
+      <input type="range" id="volume" min="0" max="100" value="50" onchange="setVolume(this.value)">
+      <p id="volumeLabel">50%</p>
+      <button class="close-btn" onclick="closeOptions()">Tutup</button>
+    </div>
+  </div>
+
+  <audio id="bgMusic" loop>
+    <source src="https://www.bensound.com/bensound-music/bensound-dreams.mp3" type="audio/mpeg">
+  </audio>
+<script>
+  const gridElement = document.getElementById("grid");
+  const levelTitle = document.getElementById("levelTitle");
+  const music = document.getElementById("bgMusic");
+
+  const gridSize = 15;
+  const levels = [
+    {
+      title: "TTS",
+      soal: [
+        { row: 1, col: 1, arah: 'horizontal', jawaban: "KALIMANTAN", nomor: 1 },
+        { row: 1, col: 8, arah: 'vertical', jawaban: "TOBA", nomor: 2 },
+        { row: 3, col: 4, arah: 'horizontal', jawaban: "SURABAYA", nomor: 3 }, 
+        { row: 3, col: 11, arah: 'vertical', jawaban: "ACEH", nomor: 4 },
+        { row: 3, col: 6, arah: 'vertical', jawaban: "RENDANG", nomor: 5 },
+        { row: 5, col: 0, arah: 'horizontal', jawaban: "LALAPAN", nomor: 6 },
+        { row: 8, col: 2, arah: 'horizontal', jawaban: "KETAN", nomor: 7 },
+        { row: 9, col: 6, arah: 'horizontal', jawaban: "GAMBYONG", nomor: 8 },
+        { row: 9, col: 10, arah: 'vertical', jawaban: "YOSPAN", nomor: 9 },
+        { row: 11, col: 10, arah: 'horizontal', jawaban: "SAMAN", nomor: 10 },
+        { row: 13, col: 7, arah: 'horizontal', jawaban: "KACAPING", nomor: 11 },
+        { row: 8, col: 4, arah: 'vertical', jawaban: "TIFA", nomor: 12 },
+        { row: 11, col: 0, arah: 'horizontal', jawaban: "SALUANG", nomor: 13 },
+        { row: 7, col: 0, arah: 'vertical', jawaban: "KERIS", nomor: 14 },
+        { row: 9, col: 8, arah: 'vertical', jawaban: "MANDAU", nomor: 15 },
+        { row: 4, col: 13, arah: 'vertical', jawaban: "GAYANG", nomor: 16 },
+      ]
+    }
+  ];
+
+  let currentLevel = 0;
+  let grid = [];
+  let activeDirection = null;
+  let activeWord = null;
+  let savedVolume = 0.5;
+
+  function loadLevel(levelIndex) {
+    currentLevel = levelIndex;
+    const level = levels[levelIndex];
+    levelTitle.textContent = level.title;
+
+    grid = Array.from({ length: gridSize }, () => Array.from({ length: gridSize }, () => null));
+
+    level.soal.forEach(soal => {
+      for (let i = 0; i < soal.jawaban.length; i++) {
+        const r = soal.row + (soal.arah === 'vertical' ? i : 0);
+        const c = soal.col + (soal.arah === 'horizontal' ? i : 0);
+        if (!grid[r][c]) grid[r][c] = { jawaban: soal.jawaban[i], nomor: null, kata: [] };
+        grid[r][c].kata.push(soal);
+        if (i === 0) grid[r][c].nomor = soal.nomor;
+      }
+    });
+
+    renderGrid();
+    document.querySelectorAll("#cluesBox .clues").forEach(c => c.style.display = "none");
+    document.getElementById("cluesLevel1").style.display = "block";
+  }
+
+  function renderGrid() {
+    gridElement.innerHTML = "";
+    gridElement.style.gridTemplateColumns = `repeat(${gridSize}, 40px)`;
+
+    for (let r = 0; r < gridSize; r++) {
+      for (let c = 0; c < gridSize; c++) {
+        const cellData = grid[r][c];
+        const cell = document.createElement("div");
+        cell.classList.add("cell");
+
+        if (cellData) {
+          const input = document.createElement("input");
+          input.maxLength = 1;
+          input.dataset.row = r;
+          input.dataset.col = c;
+          input.dataset.answer = cellData.jawaban;
+          input.dataset.kata = JSON.stringify(cellData.kata.map(k => k.nomor));
+
+input.addEventListener("focus", () => {
+  const kataList = cellData.kata;
+  if (!activeDirection || !activeWord) {
+    
+    setActiveDirection(kataList[0].arah, kataList[0]);
+  } else {
+    
+    const isInActive = activeWord.some(p => p.r == r && p.c == c);
+    if (!isInActive) {
+      
+      const sameDir = kataList.find(k => k.arah === activeDirection);
+      if (sameDir) {
+        setActiveDirection(activeDirection, sameDir);
+      } else {
+        
+        setActiveDirection(kataList[0].arah, kataList[0]);
+      }
+    }
+  }
+  highlightActiveWord();
+});
+          
+          input.addEventListener("input", () => {
+            if (input.value.length === 1) moveFocus(r, c, 1);
+          });
+
+          input.addEventListener("keydown", e => {
+            if (e.key === "Backspace" && !input.value) moveFocus(r, c, -1);
+          });
+
+          cell.appendChild(input);
+          if (cellData.nomor) {
+            const number = document.createElement("div");
+            number.classList.add("number");
+            number.textContent = cellData.nomor;
+            cell.appendChild(number);
+          }
+        } else {
+          cell.classList.add("disabled");
+        }
+        gridElement.appendChild(cell);
+      }
+    }
+  }
+
+  function setActiveDirection(direction, soal) {
+    activeDirection = direction;
+    activeWord = [];
+
+    for (let i = 0; i < soal.jawaban.length; i++) {
+      const r = soal.row + (direction === "vertical" ? i : 0);
+      const c = soal.col + (direction === "horizontal" ? i : 0);
+      activeWord.push({ r, c });
+    }
+  }
+
+  function highlightActiveWord() {
+    document.querySelectorAll(".cell input").forEach(inp => inp.style.backgroundColor = "white");
+    if (!activeWord) return;
+    activeWord.forEach(({ r, c }) => {
+      const input = document.querySelector(`.cell input[data-row='${r}'][data-col='${c}']`);
+      if (input) input.style.backgroundColor = "#d0f0ff";
+    });
+  }
+
+  function moveFocus(row, col, step) {
+    if (!activeWord) return;
+    const index = activeWord.findIndex(p => p.r === row && p.c === col);
+    if (index === -1) return;
+    const next = activeWord[index + step];
+    if (!next) return;
+    const nextInput = document.querySelector(`.cell input[data-row='${next.r}'][data-col='${next.c}']`);
+    if (nextInput) nextInput.focus();
+  }
+
+  function checkAnswers() {
+    const inputs = document.querySelectorAll(".cell input");
+    let allCorrect = true;
+    inputs.forEach(input => {
+      if (input.value.toUpperCase() === input.dataset.answer) {
+        input.style.backgroundColor = "#8f8";
+      } else if (input.value) {
+        input.style.backgroundColor = "#f88";
+        allCorrect = false;
+      } else {
+        input.style.backgroundColor = "white";
+        allCorrect = false;
+      }
+    });
+    if (allCorrect) setTimeout(() => alert("🎉 Selamat! Kamu berhasil menyelesaikan TTS ini 🎉"), 200);
+  }
+
+  function startGame() {
+    document.getElementById("menu").style.display = "none";
+    document.getElementById("game").style.display = "flex";
+    loadLevel(0);
+    music.volume = savedVolume;
+    music.play().catch(err => console.log("Autoplay dicegah:", err));
+  }
+
+  function backToMenu() {
+    document.getElementById("game").style.display = "none";
+    document.getElementById("menu").style.display = "block";
+    document.querySelectorAll("#cluesBox .clues").forEach(c => c.style.display = "none");
+    music.pause();
+    music.currentTime = 0;
+  }
+
+  function openOptions() { document.getElementById("optionsModal").style.display = "flex"; }
+  function closeOptions() { document.getElementById("optionsModal").style.display = "none"; }
+  
+  function setVolume(value) {
+  savedVolume = value / 100;
+  music.volume = savedVolume;
+  document.getElementById("volumeLabel").innerText = value + "%";
+  localStorage.setItem("ttsVolume", savedVolume);
+}
+
+window.addEventListener("load", () => {
+  const saved = localStorage.getItem("ttsVolume");
+  if (saved !== null) {
+    savedVolume = parseFloat(saved);
+    music.volume = savedVolume;
+    document.getElementById("volume").value = savedVolume * 100;
+    document.getElementById("volumeLabel").innerText = Math.round(savedVolume * 100) + "%";
+  }
+});
+
+</script>
+</body>
+</html
